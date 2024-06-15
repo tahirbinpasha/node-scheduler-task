@@ -2,7 +2,7 @@
 const { user } = require("../../../config/db");
 const { models } = require("../../../sequelize/sequelize");
 const sequelize = require("../../../sequelize/sequelize");
-
+const Op = sequelize.sequelize.Op;
 
 const addCronJob = async function (req, res, next) {
     try
@@ -58,9 +58,7 @@ const getSentEmails = async function (req, res, next) {
                 statusCode: 200,
                 data: emails,
                 message: "DATA_FETCHED"
-            });            
-
-           
+            });           
         }
         
     }
@@ -85,20 +83,10 @@ const runCronJob = async function () {
 
 
     let instance = new sequelize.db(sequelize.models.jobs);
-    let [jobs, error] = await instance.findAll({where: {job_done: 0}});
+    let [jobs, error] = await instance.findAll({where: {job_done: 0, time: timeString, [Op.or]:[{date: dateString},{day_of_week:dayOfWeek}]}});
 
     jobs.forEach(async job => {
-       
-        if (job.type == "one-time" && job.date == dateString && job.time == timeString)
-        {
-            console.log("One-time Job = ", job.description)
-            await sendJobToUsersOneTime(job);
-        }
-        else if (job.type == "recursive" && job.day_of_week == dayOfWeek && job.time == timeString)
-        {
-            console.log("Recursive Job = ", job.description)
-            await sendJobToUsersRecursive(job);
-        }
+        let a = await sendJobToUsers(job);
     });
 
 }
@@ -144,7 +132,9 @@ const updateJobDone = async (job) => {
    
 }
 
-const sendJobToUsersOneTime = async (job) => {
+
+
+const sendJobToUsers = async (job) => {
 
     let user_ids = job.user_ids.split(',')
 
@@ -158,40 +148,30 @@ const sendJobToUsersOneTime = async (job) => {
         if (userFetched)
             {
  
-                let  subject = "One time job email on " + job.date + " at " + job.time
-                let  body = "This one time email is sent to " + userFetched.name + " on " + job.date + " at " + job.time
+                let  subject = ""
+                let  body = ""
 
+                if (job.type == "one-time")
+                {
+                    subject = "One time job email on " + job.date + " at " + job.time
+                    body = "This one time email is sent to " + userFetched.name + " on " + job.date + " at " + job.time
+                }
+                else
+                {
+                    subject = "Recursive job email on " + job.day_of_week + " at " + job.time
+                    body = "This recursive email is sent to " + userFetched.name + " on " + job.day_of_week + " at " + job.time
+                }
+                
                 let [email, er] = await sendEmail(userFetched, job, new models.sent_emails({}), subject, body)
 
-                let [jobUpdated, err] = await updateJobDone(job);
-           
+                if (job.type == "one-time")
+                {
+                    let [jobUpdated, err] = await updateJobDone(job);
+                }
+
             }
 
 
-    });
-
-    return
-}
-
-
-const sendJobToUsersRecursive = async (job) => {
-
-    let user_ids = job.user_ids.split(',')
-
-    console.log("user_ids == ", user_ids)
-
-    user_ids.forEach(async user_id => {
-
-        let instance = new sequelize.db(sequelize.models.users);
-        let [userFetched, error] = await instance.findOne({where: {id: user_id}})
-
-        if (userFetched)
-            {
-                let  subject = "Recusrsive job email on " + job.day_of_week + " at " + job.time
-                let  body = "This recusrsive email is sent to " + userFetched.name + " on " + job.day_of_week + " at " + job.time
-        
-                let [email, er] = await sendEmail(userFetched, job, new models.sent_emails({}), subject, body)
-            }
     });
 
     return
