@@ -48,7 +48,7 @@ module.exports = function(sequelize, DataTypes){
         tableName: "admins",
 
     });
-    //--//
+
     Model.prototype.toJSON = function(options){
         let attributes = Object.assign({}, this.get());
         delete attributes.password;

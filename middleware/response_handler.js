@@ -4,7 +4,7 @@ const Exception = require("./../utils/exceptions");
 const sequelize = require("./../sequelize/sequelize");
 const constantEn = require("./../utility/locals/constantEnglish")
 
-//--//
+
 const uc_words = function(str){return String(str).trim().toLowerCase().replace(/\b[a-z]/g, function(s){return s.toUpperCase();});};
 const setField = function(field){
     field = String(field || "").trim();
@@ -38,7 +38,6 @@ const setErrorMessage = function(error){
                 message = `Please enter valid email address for ${path}`;
                 break;
             case "isUnique":
-               // message = `${path} '${value}' is already taken`;
                 message = `This ${path} is already taken`;
                 break;
             case "notEmpty":
@@ -51,11 +50,11 @@ const setErrorMessage = function(error){
     }
     return message;
 };
-//--//
+
 module.exports = async function(data, req, res, next){
     let console_error = true;
     let response = new responseH();
-    //--//
+ 
     if(data && !isNaN(data))
     {      
         response.setError(data, Exception(data), data);
@@ -99,7 +98,7 @@ module.exports = async function(data, req, res, next){
         delete data.message
         delete data.statusCode
         delete data.status
-        // added by usman for validation error message change
+
         if(data.data)
         {
             data = data.data
@@ -109,11 +108,9 @@ module.exports = async function(data, req, res, next){
         response.setSuccess(data, responseMessage, statusCode, status);
         console_error = false;
     }
-    //--//
     if(response.status === "error"){
         if(console_error){console.log(data);}
     }
-    //--//
     response.sendRes(req, res);
     return next();
 };

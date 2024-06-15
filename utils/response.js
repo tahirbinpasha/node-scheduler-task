@@ -1,6 +1,5 @@
 const crypto = require("./../utils/crypto");
-// const server_config = require("./../config/server");
-//--//
+
 module.exports = class{
     constructor(){
         this.status = null;
@@ -35,7 +34,7 @@ module.exports = class{
             error: this.error
         };
         if(req.statusMessage && req.statusMessage !== ""){result.message = req.statusMessage;}
-       // if(!server_config.enc_enabled){req.enc_password = "";}
+
         if(req.enc_password && req.enc_password !== ""){
             let password = req.enc_password;
             if(result.data){

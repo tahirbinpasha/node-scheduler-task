@@ -37,10 +37,10 @@ let dbConfig = {
         }
     }
 };
-///*if(config.dialect === "mssql"){dbConfig.define.schema = config.schema;}*/
-//--//
+
+
 if(!connection){connection = new sequelize(config.name, config.user, config.pass, dbConfig);}
-//--//
+
 module.exports = {
     config,
     sequelize,

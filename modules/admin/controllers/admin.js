@@ -62,69 +62,69 @@ const signInAdmin = async function (req, res, next) {
 
 //------------ created only to add admin user in database -------------//
 
-// const addAdmin = async function (req, res, next) {
-//     try
-//     {   
+const addAdmin = async function (req, res, next) {
+    try
+    {   
 
-//         let [admin, error]  = await createAdmin(req, new models.admins({}), next)
+        let [admin, error]  = await createAdmin(req, new models.admins({}), next)
         
-//         if (admin)
-//         {
+        if (admin)
+        {
             
-//             return next({
-//                 status: "success",
-//                 statusCode: 200,
-//                 admin: admin_updated,
-//                 message: "DATA_CREATED"
-//             });
+            return next({
+                status: "success",
+                statusCode: 200,
+                admin: admin_updated,
+                message: "DATA_CREATED"
+            });
             
             
-//         }
-//         else
-//         {
-//             return next(error);
-//         }
-//     }
-//     catch(error)
-//     {
-//         return next(error)
-//     } 
-// }
+        }
+        else
+        {
+            return next(error);
+        }
+    }
+    catch(error)
+    {
+        return next(error)
+    } 
+}
 
 
 
 
 
-//--//
+
 module.exports = {
 
     signInAdmin,
-  //  addAdmin
+    addAdmin
 
 };
 
 
-// const createAdmin = async (req, admin, next) => {
+const createAdmin = async (req, admin, next) => {
     
-//     let {name, email, password} = req.body
+    let {name, email, password} = req.body
     
-//     let instance = new sequelize.db(sequelize.models.admins);
-//     let [adminFound, error] = await instance.findOne({where: {email: email}})
-//     if (adminFound)
-//     {
-//         return next({
-//             status: "error",
-//             statusCode: 422,
-//             message: "EMAIL_ALREADY_EXIST"
-//         });
-//     }
+    let instance = new sequelize.db(sequelize.models.admins);
+    let [adminFound, error] = await instance.findOne({where: {email: email}})
+    if (adminFound)
+    {
+        return next({
+            status: "error",
+            statusCode: 422,
+            message: "EMAIL_ALREADY_EXIST"
+        });
+    }
 
-//     let passwordHash =  crypto.createHash("sha1").update(password).digest("hex");
+    let passwordHash =  crypto.createHash("sha1").update(password).digest("hex");
     
-//     admin.name = name;
-//     admin.email = email;
-//     admin.password = passwordHash;
+    admin.name = name;
+    admin.email = email;
+    admin.password = passwordHash;
     
-//     return  await instance.create(admin.toJSONincludingPassword())
+    return  await instance.create(admin.toJSONincludingPassword())
     
-// }
+}
