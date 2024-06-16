@@ -32,7 +32,7 @@ app.use(require("./middleware/not_found"));
 app.use(require("./middleware/response_handler"));
 
 
-const PORT = process.env.PORT || 1993;
+const PORT = 1993;
 
  const db = require("./config/db")
 
@@ -45,7 +45,6 @@ sequelize.connection.authenticate().then(function(){
         if(error){console.log("Server is not listening...", error);}
         else{
             console.log("Server is listening on HOST", db.host, "on PORT", PORT);
-            let NODE_APP_INSTANCE = parseInt(process.env.NODE_APP_INSTANCE || 0) || 0;
         }
     });
 }).catch(function(error){console.log("Unable to connect to database", error);});
